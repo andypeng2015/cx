@@ -213,7 +213,16 @@ fn main() {
             }
         }
         Commands::Skill => {
-            print!("{}", include_str!("skill.md"));
+            print!(
+                "{}",
+                concat!(
+                    include_str!("../skills/cx/SKILL.md"),
+                    "\n\n---\n<!-- File: references/decision-tree.md -->\n\n",
+                    include_str!("../skills/cx/references/decision-tree.md"),
+                    "\n\n---\n<!-- File: references/output-examples.md -->\n\n",
+                    include_str!("../skills/cx/references/output-examples.md")
+                )
+            );
             0
         }
         Commands::Cache { action } => {
