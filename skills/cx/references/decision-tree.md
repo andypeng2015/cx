@@ -1,6 +1,6 @@
 # cx Decision Tree
 
-Quick decision guide for when and how to use cx.
+Use this guide when choosing between cx, a text search, or reading a full file.
 
 ```
 START: Need to understand code/docs?
@@ -9,7 +9,7 @@ START: Need to understand code/docs?
 │   │
 │   ├─ NO → Use `read` tool directly (for .yaml, .json, .toml, binary files, etc.)
 │   │
-│   └─ YES → What's your goal?
+│   └─ YES → What is the goal?
 │       │
 │       ├─ Understand file or directory structure → `cx overview <path> [--full]`
 │       │   └─ Need specific symbol/section? → `cx definition --name <X>`
@@ -22,15 +22,11 @@ START: Need to understand code/docs?
 │       │
 │       └─ After context compression → `cx overview <path>` to re-orient
 │
-└─ NO → Do you need full file context? (imports, comments, non-code)
+└─ NO → Is the target a text pattern, configuration value, or non-symbol region?
     │
-    ├─ YES → Use `read` tool
+    ├─ YES → Use `rg` for scoped text search, then read the needed file section
     │
-    └─ NO → Are you editing the file?
-        │
-        ├─ YES → Use `read` + `edit` tools
-        │
-        └─ NO → Use `grep` or `web_search` for text patterns
+    └─ NO → Read the required file context directly
 ```
 ## Quick Lookup Table
 
@@ -43,6 +39,43 @@ START: Need to understand code/docs?
 | "What kinds of symbols exist?" | `cx symbols --kinds` | `cx symbols --kind <K>` |
 | "What's in this Markdown doc?" | `cx overview README.md` | `cx definition --name "Section Title"` |
 
+## Common Pitfalls
+
+| Avoid | Prefer | Reason |
+|-------|--------|--------|
+| `cx overview config.yaml` | Read the config file | cx does not parse YAML, JSON, or TOML |
+| `cx definition --name main` | Add `--from src/app.rs` | Common names need disambiguation |
+| Reading before checking structure | `cx overview file.rs` first | Avoids unnecessary full-file context |
+| Exact `cx symbols --name handler` | `cx symbols --name "*handler*"` | Discovery uses glob patterns |
+| Ignoring missing grammars | `cx lang add <language>` | cx cannot index without the grammar |
+
+## Workflow Examples
+
+### Understand a New Codebase
+
+```bash
+cx overview .
+cx symbols --kind fn
+cx definition --name main --from src/main.rs
+cx references --name main --context
+```
+
+### Refactor a Named Symbol
+
+```bash
+cx references --name old_function_name --context
+cx definition --name old_function_name
+```
+
+Read or edit only after the definition and relevant call sites are understood.
+
+### Navigate Markdown Documentation
+
+```bash
+cx overview README.md
+cx definition --name "Installation" --from README.md
+```
+
 ## Error Recovery Flow
 
 ```
@@ -50,11 +83,11 @@ cx command fails
 │
 ├─ "unsupported file type" → File is .yaml/.json/.toml → Use `read`
 │
-├─ "database locked" → Wait 2-3s → Retry → `cx cache clean` if persistent
+├─ "database locked" → See `cx skill references setup-and-recovery`
 │
 ├─ "file not in index" → File outside git root? → Pass `--root <path>` or use `read`
 │
 ├─ "symbol not found" → Try glob: `cx symbols --name "*partial*"`
 │
-└─ "missing grammar" → `cx lang add <language>`
+└─ "missing grammar" → See `cx skill references setup-and-recovery`
 ```
