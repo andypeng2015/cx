@@ -227,6 +227,60 @@ fn version_flag() {
     assert!(stdout.starts_with("cx "), "should print version: {stdout}");
 }
 
+#[test]
+fn skill_prints_compact_core_prompt() {
+    let out = cx().arg("skill").output().unwrap();
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    assert!(out.status.success(), "stderr: {}", String::from_utf8_lossy(&out.stderr));
+    assert!(stdout.starts_with("---\nname: cx"), "{stdout}");
+    assert!(stdout.contains("## Core Workflow"), "{stdout}");
+    assert!(stdout.contains("cx skill references <name>"), "{stdout}");
+    assert!(!stdout.contains("# cx Decision Tree"), "core prompt must remain compact: {stdout}");
+}
+
+#[test]
+fn skill_references_lists_available_topics() {
+    let out = cx().args(["skill", "references"]).output().unwrap();
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    assert!(out.status.success(), "stderr: {}", String::from_utf8_lossy(&out.stderr));
+    for name in [
+        "command-reference",
+        "decision-tree",
+        "setup-and-recovery",
+        "usage-inventory",
+        "output-examples",
+    ] {
+        assert!(stdout.contains(name), "missing {name}: {stdout}");
+    }
+}
+
+#[test]
+fn skill_references_print_selected_document() {
+    for (name, heading) in [
+        ("command-reference", "# cx Command Reference"),
+        ("decision-tree", "# cx Decision Tree"),
+        ("setup-and-recovery", "# cx Setup and Recovery"),
+        ("usage-inventory", "# Complete Usage Inventory"),
+        ("output-examples", "# cx Output Examples"),
+    ] {
+        let out = cx().args(["skill", "references", name]).output().unwrap();
+        let stdout = String::from_utf8_lossy(&out.stdout);
+        assert!(out.status.success(), "{name} stderr: {}", String::from_utf8_lossy(&out.stderr));
+        assert!(stdout.starts_with(heading), "{name}: {stdout}");
+    }
+}
+
+#[test]
+fn skill_references_reject_unknown_document() {
+    let out = cx()
+        .args(["skill", "references", "not-a-reference"])
+        .output()
+        .unwrap();
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert!(!out.status.success());
+    assert!(stderr.contains("invalid value"), "{stderr}");
+}
+
 // --- Error messages ---
 
 #[test]

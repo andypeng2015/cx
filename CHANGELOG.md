@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- `cx skill` now prints a compact core prompt. Use `cx skill references` to discover optional guidance and `cx skill references <name>` to print it on demand.
+
 ## [0.7.2] - 2026-07-23
 
 ### Fixed

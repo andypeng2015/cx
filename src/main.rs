@@ -2,6 +2,7 @@ mod index;
 mod lang;
 mod output;
 mod query;
+mod skill;
 mod language;
 mod util;
 
@@ -103,8 +104,11 @@ enum Commands {
         #[command(subcommand)]
         action: LangAction,
     },
-    /// Print the agent skill file to stdout
-    Skill,
+    /// Print the agent skill or inspect its optional references
+    Skill {
+        #[command(subcommand)]
+        action: Option<SkillAction>,
+    },
     /// Manage the index cache
     Cache {
         #[command(subcommand)]
@@ -126,6 +130,15 @@ enum LangAction {
     },
     /// List supported languages and their install status
     List,
+}
+
+#[derive(Subcommand)]
+enum SkillAction {
+    /// List optional references or print one by name
+    References {
+        #[arg(value_name = "NAME")]
+        reference: Option<skill::Reference>,
+    },
 }
 
 #[derive(Subcommand)]
@@ -212,17 +225,11 @@ fn main() {
                 LangAction::List => lang::list(),
             }
         }
-        Commands::Skill => {
-            print!(
-                "{}",
-                concat!(
-                    include_str!("../skills/cx/SKILL.md"),
-                    "\n\n---\n<!-- File: references/decision-tree.md -->\n\n",
-                    include_str!("../skills/cx/references/decision-tree.md"),
-                    "\n\n---\n<!-- File: references/output-examples.md -->\n\n",
-                    include_str!("../skills/cx/references/output-examples.md")
-                )
-            );
+        Commands::Skill { action } => {
+            match action {
+                None => skill::print_core(),
+                Some(SkillAction::References { reference }) => skill::print_reference(reference),
+            }
             0
         }
         Commands::Cache { action } => {
