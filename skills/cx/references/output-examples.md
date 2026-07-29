@@ -1,6 +1,6 @@
 # cx Output Examples
 
-Real output samples from actual commands to help agents understand what to expect.
+Real output samples from cx commands. Use these only when exact output shape matters.
 
 ## cx overview (Directory Overview)
 
