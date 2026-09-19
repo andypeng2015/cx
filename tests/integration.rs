@@ -232,7 +232,7 @@ fn skill_prints_compact_core_prompt() {
     let out = cx().arg("skill").output().unwrap();
     let stdout = String::from_utf8_lossy(&out.stdout);
     assert!(out.status.success(), "stderr: {}", String::from_utf8_lossy(&out.stderr));
-    assert!(stdout.starts_with("---\nname: cx"), "{stdout}");
+    assert!(stdout.lines().take(2).eq(["---", "name: cx"]), "{stdout}");
     assert!(stdout.contains("## Core Workflow"), "{stdout}");
     assert!(stdout.contains("cx skill references <name>"), "{stdout}");
     assert!(!stdout.contains("# cx Decision Tree"), "core prompt must remain compact: {stdout}");
