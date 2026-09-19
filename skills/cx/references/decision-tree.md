@@ -5,7 +5,7 @@ Use this guide when choosing between cx, a text search, or reading a full file.
 ```
 START: Need to understand code/docs?
 │
-├─ YES → Is it a supported language? (Rust/TS/Python/Go/C/ObjC/C++/Java/Ruby/Lua/Zig/Bash/Solidity/Dart/Elixir/Swift/Markdown)
+├─ YES → Is it a supported language? (`cx lang list` lists supported languages)
 │   │
 │   ├─ NO → Use `read` tool directly (for .yaml, .json, .toml, binary files, etc.)
 │   │
@@ -87,7 +87,7 @@ cx command fails
 │
 ├─ "file not in index" → File outside git root? → Pass `--root <path>` or use `read`
 │
-├─ "symbol not found" → Try glob: `cx symbols --name "*partial*"`
+├─ "no matches" → Try glob: `cx symbols --name "*partial*"`
 │
 └─ "missing grammar" → See `cx skill references setup-and-recovery`
 ```

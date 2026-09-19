@@ -23,13 +23,15 @@ work after context compression. For ambiguous names, find candidates with
 
 ## Before Running cx
 
+- Check `command -v cx`; if it is absent, ask the user to install it.
 - Use supported source languages or Markdown; do not use cx for YAML, JSON, TOML,
   binary files, anonymous functions, dynamic dispatch, or non-symbol regions.
 - Work inside a git repository, or provide `--root <path>`.
 - Ensure the required language grammar is installed. Run `cx overview .` for a
   first-use probe; its missing-grammar output includes the install command.
 
-cx is read-only. Use normal read and edit tools for changes or for full-file context.
+Navigation commands do not modify source files, but do update cx's index cache.
+Use normal read and edit tools for changes or for full-file context.
 
 ## Optional References
 
