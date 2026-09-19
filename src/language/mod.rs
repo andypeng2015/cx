@@ -314,6 +314,11 @@ fn parse_source(lang: &str, source: &[u8], path: &Path) -> Result<(&'static Lang
     let config = LANGUAGES.iter().find(|c| c.name == lang).ok_or_else(|| LangError::NotInstalled(lang.to_string()))?;
     let grammar_name = resolve_grammar_name(config, ext);
 
+    // get_language auto-downloads missing grammars; leave downloads to `cx lang add`.
+    static INSTALLED: LazyLock<Vec<String>> = LazyLock::new(tree_sitter_language_pack::downloaded_languages);
+    if !INSTALLED.iter().any(|name| name == grammar_name) {
+        return Err(LangError::NotInstalled(config.name.to_string()));
+    }
     let ts_lang = tree_sitter_language_pack::get_language(grammar_name)
         .map_err(|_| LangError::NotInstalled(config.name.to_string()))?;
 

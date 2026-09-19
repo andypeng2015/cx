@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Skip files with missing grammars instead of silently downloading during indexing, which could hang on slow networks (#24).
+
 ## [0.7.2] - 2026-07-23
 
 ### Fixed

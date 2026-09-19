@@ -227,6 +227,42 @@ fn version_flag() {
     assert!(stdout.starts_with("cx "), "should print version: {stdout}");
 }
 
+#[test]
+fn missing_grammars_do_not_download_during_indexing() {
+    use std::process::Stdio;
+    use std::time::{Duration, Instant};
+
+    let project = temp_project(&[("main.rs", "fn hello() {}"), ("README.md", "# Hello")]);
+    let cache = tempfile::tempdir().unwrap();
+    // A stalled proxy makes an accidental grammar download fail the deadline below.
+    let proxy = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let mut child = cx()
+        .args(["--root", project.path().to_str().unwrap(), "symbols"])
+        .env("CX_CACHE_DIR", cache.path())
+        .env("HTTPS_PROXY", format!("http://{}", proxy.local_addr().unwrap()))
+        .env("NO_PROXY", "")
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn().unwrap();
+    let started = Instant::now();
+    while child.try_wait().unwrap().is_none() {
+        if started.elapsed() > Duration::from_secs(5) {
+            child.kill().unwrap();
+            let out = child.wait_with_output().unwrap();
+            panic!("indexing waited for missing grammars: {}", String::from_utf8_lossy(&out.stderr));
+        }
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    let out = child.wait_with_output().unwrap();
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert!(out.status.success(), "{stderr}");
+    assert!(stderr.contains("no language grammars installed"), "{stderr}");
+    assert!(stderr.contains("rust (1 files)"), "{stderr}");
+    assert!(stderr.contains("markdown (1 files)"), "{stderr}");
+    assert!(stderr.contains("Install with: cx lang add"), "{stderr}");
+    assert!(out.stdout.is_empty(), "missing grammars must not be downloaded");
+}
+
 // --- Error messages ---
 
 #[test]
