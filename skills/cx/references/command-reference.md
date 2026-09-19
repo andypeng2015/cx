@@ -28,7 +28,7 @@ Default limits are unlimited for `overview`, 3 for `definition`, 100 for
 `symbols`, and 50 for `references`. Prefer narrowing with `--from`, `--file`,
 or `--kind` before paging or using `--all`.
 
-When limited, JSON output uses `{total, offset, limit, results}`. Otherwise it
+When truncated or using an offset, JSON output uses `{total, offset, limit, results}`. Otherwise it
 returns a bare array. Default TOON output is compact and line-based; line numbers
 are 1-indexed and paths are relative to the project root.
 

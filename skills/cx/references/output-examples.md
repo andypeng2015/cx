@@ -1,40 +1,55 @@
 # cx Output Examples
 
-Real output samples from cx commands. Use these only when exact output shape matters.
+These outputs were captured from a small sample project. Its `src/main.rs` contains:
 
-## cx overview (Directory Overview)
-
-```
-[3]{file,symbol_count,symbols}:
-  src/main.rs,3,"Cli, Commands, main"
-  src/index.rs,5,"Index, FileData, Symbol, SymbolKind, cache_path_for"
-  src/query.rs,4,"dir_overview, symbols, definition, references"
+```rust
+fn hello() {}
+fn main() { hello(); }
 ```
 
-## cx overview (Markdown Headings)
+Its `GUIDE.md` contains `# Guide`, `## Setup`, and `Use cx.` on separate lines.
+
+## Directory overview
+
+`cx overview src`
 
 ```
-[3]{name,kind,range,signature}:
-  "cx — Semantic Code Navigation",heading,L6-L34,"# cx — Semantic Code Navigation"
-  "First-run checks",heading,L35-L59,"## First-run checks (once per session)"
-  "Common Recipes & Extra Info",heading,L60-L73,"## Common Recipes & Extra Info"
+[1]{file,symbols}:
+  src/main.rs,"hello, main"
 ```
 
-## cx symbols --kinds
+## Markdown headings
+
+`cx overview GUIDE.md`
 
 ```
-[4]{kind,count}:
-  fn,42
-  struct,15
-  enum,3
-  heading,12
+[2]{name,kind,range,signature}:
+  Guide,heading,"1-3",# Guide
+  Setup,heading,"2-3",## Setup
 ```
 
-## cx symbols --json (Paginated vs Unlimited)
+## Symbol kinds
 
-Unlimited (`--all` or unpaginated):
+`cx symbols --kinds`
+
+```
+[2]{kind,count}:
+  fn,2
+  heading,2
+```
+
+## Unlimited JSON
+
+`cx symbols --kind fn --json --all`
+
 ```json
 [
+  {
+    "file": "src/main.rs",
+    "name": "hello",
+    "kind": "fn",
+    "signature": "fn hello()"
+  },
   {
     "file": "src/main.rs",
     "name": "main",
@@ -44,45 +59,50 @@ Unlimited (`--all` or unpaginated):
 ]
 ```
 
-Paginated (`--limit` active):
+## Truncated JSON
+
+`cx symbols --kind fn --json --limit 1`
+
 ```json
 {
-  "total": 32,
+  "total": 2,
   "offset": 0,
   "limit": 1,
   "results": [
     {
       "file": "src/main.rs",
-      "name": "main",
+      "name": "hello",
       "kind": "fn",
-      "signature": "fn main()"
+      "signature": "fn hello()"
     }
   ]
 }
 ```
 
-## cx definition
+## Definition
+
+`cx definition --name hello`
 
 ```
 file: src/main.rs
-line: 154
+line: 1
 ---
-fn main() {
-    let config = tree_sitter_language_pack::PackConfig { ... };
-    // ... function body
+fn hello() {}
 ```
 
-## cx references (with --context)
+## References with context
+
+`cx references --name hello --context`
 
 ```
-[2]{file,line,kind,context}:
-  src/main.rs,180,call,"let idx = index::Index::load_or_build(&root);"
-  src/main.rs,190,call,"let idx = index::Index::load_or_build(&root);"
+[2]{file,line,caller,context}:
+  src/main.rs,1,hello,"fn hello() {}"
+  src/main.rs,2,main,"fn main() { hello(); }"
 ```
 
 ## Output Format Notes
 
-- Default format is **TOON** (compact, line-based)
-- Use `--json` for machine-parseable JSON output
-- Line numbers are 1-indexed
-- File paths are relative to project root (git root)
+- TOON is the default; use `--json` for JSON.
+- Line numbers and ranges are 1-indexed. Paths are relative to the project root.
+- JSON uses `{total, offset, limit, results}` only when truncated or when an offset is applied; otherwise it is an array.
+- References match identifier names, including declarations. `caller` names the enclosing symbol; it does not classify a match as a function call.

@@ -35,19 +35,21 @@ Use normal read tools for YAML, JSON, TOML, binary files, and non-symbol regions
 
 ### `cx: database locked, waiting...`
 
-Wait two or three seconds and retry. If the lock persists, run `cx cache clean`.
-Use process inspection only as a last resort for a stale cx process.
+Let the other cx process finish, then retry. If the lock persists, inspect running
+cx processes. Only run `cx cache clean` after they have exited.
 
 ### `cx: file not in index: <path>`
 
 Ensure the file is within the git root, or pass `--root <path>` for the intended
 project boundary.
 
-### `cx: missing grammar for <language>`
+### Missing grammar diagnostics
 
-Install the grammar with `cx lang add <language>`, then rerun the query.
+Indexing reports missing grammars with an install hint; references may report
+`cx: <language> grammar not installed`. Run the suggested `cx lang add <language>`
+command, then rerun the query.
 
-### `cx: symbol not found: <name>`
+### `cx: no matches`
 
 Search with a glob such as `cx symbols --name "*partial*"`, inspect the file with
 `cx overview`, and verify spelling and case before retrying.

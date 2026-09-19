@@ -1,7 +1,9 @@
 # Complete Usage Inventory
 
-`cx references` reports semantic symbol references. It does not enumerate binary
-entrypoints, manifests, documentation, tests, or plain-text path mentions.
+`cx references` matches identifier names in indexed source, including test files
+and declarations. It does not resolve names to a unique symbol, so unrelated
+identifiers with the same name can appear. It does not enumerate manifest
+entries, Markdown prose, or plain-text path mentions.
 
 When the request asks for all usages, entrypoints, or integration impact:
 
