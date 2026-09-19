@@ -1085,6 +1085,7 @@ fn completion_emits_script_for_each_shell() {
         ("zsh", "#compdef cx"),
         ("fish", "complete -c cx"),
         ("powershell", "Register-ArgumentCompleter"),
+        ("elvish", "edit:completion:arg-completer[cx]"),
     ];
     for (shell, marker) in cases {
         let out = cx().args(["completion", shell]).output().unwrap();
