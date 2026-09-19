@@ -35,11 +35,14 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Tag if version bumped
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           VERSION="v$(grep '^version' Cargo.toml | head -1 | sed 's/.*"\(.*\)"/\1/')"
           if git rev-parse "$VERSION" >/dev/null 2>&1; then
@@ -48,4 +51,6 @@ jobs:
             echo "Creating tag $VERSION"
             git tag "$VERSION"
             git push origin "$VERSION"
+            # GITHUB_TOKEN tag pushes do not trigger another workflow.
+            gh workflow run release.yml --ref "$VERSION"
           fi

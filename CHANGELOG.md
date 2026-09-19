@@ -7,12 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.3] - 2026-09-20
+
 ### Added
 - PHP symbol extraction for functions, classes, methods, interfaces, traits, enums, namespaces, and constants (#25).
 - `cx completion <shell>` generates shell completion scripts for bash, zsh, fish, powershell, and elvish.
 
 ### Fixed
 - Skip files with missing grammars instead of silently downloading during indexing, which could hang on slow networks (#24).
+- Dispatch the release workflow after CI creates a version tag.
 
 ### Changed
 - `cx skill` now prints a compact core prompt. Use `cx skill references` to discover optional guidance and `cx skill references <name>` to print it on demand.
