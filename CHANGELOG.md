@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- PHP symbol extraction for functions, classes, methods, interfaces, traits, enums, namespaces, and constants (#25).
+
 ### Fixed
 - Skip files with missing grammars instead of silently downloading during indexing, which could hang on slow networks (#24).
 
